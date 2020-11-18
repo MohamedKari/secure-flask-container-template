@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+    ports:
+      - 5555:5555
+    environment:
+      SERVICE_PORT: 5555
+    volumes:
+      - /home/ubuntu/share/web:/share
+    networks: 
+      - main
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - 80:80
+      - 443:443
+    environment: 
+      DOMAIN_NAME: $DOMAIN_NAME
+    volumes:
+      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+      - /home/ubuntu/data/certbot/www:/var/www/certbot 
+    networks: 
+      - main
+
+  certbot-auto:
+    build:
+      context: ./certbot-auto
+    volumes:
+      - /home/ubuntu/data/certbot/conf:/etc/letsencrypt
+      - /home/ubuntu/data/certbot/www:/var/www/certbot 
+    environment: 
+      DOMAIN_NAME: $DOMAIN_NAME
+      EMAIL_ADDRESS: $EMAIL_ADDRESS
+    
+networks:
+    main:
+      driver: bridge      
