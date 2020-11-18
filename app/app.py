@@ -14,7 +14,7 @@ def square(base): # pylint: disable=unused-variable
     return resp
 
 @app.route("/health", methods=["GET"])
-def health(): # pylint: disable=unused-variable
+def health(): 
     return make_response("", 200)
 
 

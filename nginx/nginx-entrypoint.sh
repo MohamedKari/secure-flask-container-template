@@ -2,7 +2,7 @@
 # bash docker-entrypoint.sh nginx -g "daemon off;"
 
 until curl --silent http://app:5555/health; do
-    echo "app not yet healthy. waiting ...";
+    echo "App not yet healthy. Waiting ...";
     sleep 1s;
 done
 
