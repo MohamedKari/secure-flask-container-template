@@ -1,3 +1,9 @@
+# Secure APIS
+
+_A template repo showing how to serve an API over HTTPS conveniently with Let's Encrypt certificates, using Certbot, Nginx, and Flask, each running in a Docker container spun up through Docker Compose._
+
+> This repo accompanies my blog post under https://blog.mkari.de/posts/secure-apis/.
+
 Make sure your server is reachable under your domain name and has Docker and Docker Compose installed. 
 
 Then, to spin up a Flask container serving an API securely over HTTPS, run:
