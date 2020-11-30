@@ -1,0 +1,67 @@
+name: CI
+
+on: 
+  - push
+  - pull_request
+
+jobs:
+  build-deploy:
+    name: Build and deploy
+
+    runs-on: ubuntu-latest
+
+    steps: 
+      - uses: actions/checkout@v2
+
+      - name: Check secret existence
+        env: 
+          CA: ${{ secrets.CA }}
+          CERT: ${{ secrets.CERT }}
+          KEY: ${{ secrets.KEY }}
+          DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: |
+          if [ -z "$CA" ]; then exit 100; fi
+          if [ -z "$CERT" ]; then exit 100; fi
+          if [ -z "$KEY" ]; then exit 100; fi
+          if [ -z "$DOCKER_HOST" ]; then exit 100; fi
+          if [ -z "$DOMAIN_NAME" ]; then exit 100; fi
+          if [ -z "$EMAIL_ADDRESS" ]; then exit 100; fi
+ 
+
+      - name: Build images
+        run: docker-compose build
+
+      #- name: Intra-Container test
+      #  run: |
+      #    docker-compose -f docker-compose.test.yml up
+
+      - name: Deploy container to remote machine
+        env:
+          CA: ${{ secrets.CA }}
+          CERT: ${{ secrets.CERT }}
+          KEY: ${{ secrets.KEY }}
+          DOCKER_TLS_VERIFY: 1
+          DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
+          DOCKER_CERT_PATH: /home/runner/work/${{ github.event.repository.name }}/${{ github.event.repository.name }}/certs
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: |
+          mkdir certs
+          printf '%s' "$CA" > certs/ca.pem
+          printf '%s' "$CERT" > certs/cert.pem
+          printf '%s' "$KEY" > certs/key.pem  
+          docker-compose down
+          docker-compose up --detach
+          docker ps
+      - name: Run smoke test
+        timeout-minutes: 1
+        env: 
+          DOMAIN_NAME: ${{ secrets.DOMAIN_NAME }}
+        run: |
+          until curl -s https://$DOMAIN_NAME/health; do
+            sleep 5s
+          done
+          curl -v https://$DOMAIN_NAME/health
+          echo "Healthy.";

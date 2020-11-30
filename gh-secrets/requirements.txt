@@ -1,0 +1,4 @@
+requests
+pynacl
+fire
+python-dotenv
