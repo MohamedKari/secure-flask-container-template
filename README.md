@@ -4,9 +4,9 @@ _A template repo showing how to serve an API over HTTPS conveniently with Let's 
 
 > This repo accompanies my blog post under https://blog.mkari.de/posts/secure-apis/.
 
-## Quick Start
+## Quick Start for Serving an API
 
-Make sure your server is reachable under your domain name and has Docker and Docker Compose installed. 
+Make sure your server is reachable under your domain name and has Docker and Docker Compose installed and 
 
 Then, to spin up a Flask container serving an API securely over HTTPS, run:
 ```sh
@@ -29,7 +29,7 @@ docker-compose down
 docker-compose up --build
 ```
 
-## Automate Deployment 
+## Automate the Docker-Compose Deployment 
 > I explained the rationale for this part in https://blog.mkari.de/posts/single-docker-host-cicd/.
 
 ```sh
@@ -51,7 +51,7 @@ python gh-secrets/gh-secrets.py set $REPO_OWNER $REPO_NAME DOMAIN_NAME $DOMAIN_N
 # FAQ
 ## How do I start a remote Docker host in the cloud using docker-machine?
 
-For GCP server, I usually use something like:
+For a GCP server, I usually use something like:
 ```sh
 docker-machine create --driver google \
     --google-disk-size 100 \
